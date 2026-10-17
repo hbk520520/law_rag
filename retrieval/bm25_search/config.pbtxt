@@ -1,0 +1,6 @@
+name: "bm25_search"
+backend: "python"
+max_batch_size: 32
+input [{ name: "TEXT_IN", data_type: TYPE_STRING, dims: [ 1 ] }]
+output [{ name: "BM25_RANKS_OUT", data_type: TYPE_INT32, dims: [ 50 ] }]
+instance_group [{ kind: KIND_CPU }]

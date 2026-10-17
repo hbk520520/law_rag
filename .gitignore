@@ -1,0 +1,54 @@
+# Python / local environments
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv*/
+venv/
+build/
+dist/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+# Secrets / local configuration
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+.vscode/
+.idea/
+# Weights, indexes, cases, caches, reports and backups
+/generate/model/
+/graph/prepared/
+/output/
+/tmp/
+/backups/
+*.safetensors
+*.pt
+*.pth
+*.bin
+*.npy
+*.npz
+*.faiss
+*.sqlite*
+*.db
+*.log
+*.zip
+*.7z
+*.dll
+*.exe
+# Raw QA and training data stay private
+/graph/legal_counsel_v2.json
+/graph/final_triplets.json
+/graph/final_triplets_verified.jsonl
+# Local historical copies are outside the maintained release
+/RAG_data/
+/jiancha/
+/优化前/
+/retrieval/bm25_search/Program Files (x86)/
+/1
+/README.txt
+Thumbs.db
+Desktop.ini

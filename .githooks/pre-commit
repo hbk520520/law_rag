@@ -1,0 +1,4 @@
+#!/bin/sh
+set -eu
+python tools/check_repository.py --staged
+git diff --cached --check

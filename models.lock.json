@@ -1,0 +1,32 @@
+{
+  "embedding": {
+    "repository": "BAAI/bge-base-zh-v1.5",
+    "revision": "f03589ceff5aac7111bd60cfc7d497ca17ecac65"
+  },
+  "reranker": {
+    "repository": "BAAI/bge-reranker-base",
+    "revision": "2cfc18c9415c912f9d8155881c133215df768a70"
+  },
+  "local_generator": {
+    "repository": "Qwen/Qwen2.5-1.5B-Instruct",
+    "revision": "989aa7980e4cf806f80c7fef2b1adb7bc71aa306",
+    "files": [
+      "config.json",
+      "generation_config.json",
+      "model.safetensors",
+      "tokenizer_config.json",
+      "tokenizer.json",
+      "vocab.json",
+      "merges.txt",
+      "README.md",
+      "LICENSE"
+    ],
+    "sha256": {
+      "generate/model/config.json": "98d2ff8cc47488d08a2b0b3acf4eb99ef210779b42bd48605f6b8e36acdbf670",
+      "generate/model/model.safetensors": "dd924a11b4c220f385b51ffa522daea7c9f3d850e31b162bb5661df483c6d3ee",
+      "generate/model/tokenizer.json": "c0382117ea329cdf097041132f6d735924b697924d6f6fc3945713e96ce87539"
+    }
+  },
+  "cloud_model": "deepseek-flash",
+  "cloud_note": "Provider-managed model alias; not an immutable weight snapshot."
+}

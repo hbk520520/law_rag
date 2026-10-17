@@ -1,0 +1,12 @@
+name: "rrf_fusion"
+backend: "python"
+max_batch_size: 32
+input [
+  { name: "VECTOR_RANKS_IN", data_type: TYPE_INT32, dims: [ 50 ] },
+  { name: "BM25_RANKS_IN", data_type: TYPE_INT32, dims: [ 50 ] }
+]
+output [
+  { name: "FINAL_RESULTS", data_type: TYPE_STRING, dims: [ -1 ] },
+  { name: "FINAL_IDS", data_type: TYPE_STRING, dims: [ -1 ] }
+]
+instance_group [{ kind: KIND_CPU }]

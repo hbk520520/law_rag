@@ -1,0 +1,6 @@
+name: "vector_search"
+backend: "python"
+max_batch_size: 32
+input [{ name: "VECTOR_IN", data_type: TYPE_FP32, dims: [ -1 ] }]
+output [{ name: "VECTOR_RANKS_OUT", data_type: TYPE_INT32, dims: [ 50 ] }]
+instance_group [{ kind: KIND_CPU }]

@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>律据 · 法律证据 Agent</title>
+  <style>
+    :root{font-family:system-ui,"Microsoft YaHei",sans-serif;color:#233344;background:#f3f6f8;font-size:14px;line-height:1.65;--navy:#162b3c;--teal:#087e83;--border:#dce4ea}
+    *{box-sizing:border-box}body{margin:0}header{background:var(--navy);color:#fff;padding:20px 5vw;display:flex;align-items:center;justify-content:space-between;gap:16px}header h1{font-size:22px;letter-spacing:3px;margin:0}header small{color:#b3c7d2;letter-spacing:0}button{font:inherit;cursor:pointer;border:1px solid var(--border);border-radius:7px;padding:9px 18px;background:#fff;color:#233344}button:disabled{opacity:.55;cursor:wait}.primary{background:var(--teal);color:white;border-color:var(--teal)}main{max-width:1440px;margin:28px auto;padding:0 26px;display:grid;grid-template-columns:minmax(320px,1.2fr) minmax(300px,1fr);gap:22px}.card{border:1px solid var(--border);background:white;border-radius:11px;padding:23px;margin-bottom:20px;box-shadow:0 3px 12px #1e344206}h2{font-size:17px;margin:0 0 15px}h3{font-size:14px;margin:0 0 8px}.muted{color:#6c7c87;font-size:12px}.intro{padding:20px 0 24px}.intro h2{font-size:27px;line-height:1.5;margin:0 0 8px}.intro p{margin:0;color:#5c707c}.row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}textarea,input{font:inherit;border:1px solid #cbd7df;border-radius:6px;padding:10px;max-width:100%;background:#fff}textarea{width:100%;resize:vertical;min-height:120px}input[type=date]{padding:7px}.compose{margin-top:20px}.compose .row{margin-top:12px;justify-content:space-between}.message{white-space:pre-wrap;overflow-wrap:anywhere;padding:15px 17px;border-radius:9px;margin-bottom:14px}.message.user{background:#eef3f6;margin-left:30px}.message.assistant{background:#f3f9f8;border-left:3px solid var(--teal)}.message label{display:block;font-size:11px;font-weight:700;color:#637985;margin-bottom:5px}.message a{color:var(--teal);font-weight:600}.badge{display:inline-block;border-radius:5px;background:#eef3f6;color:#526d7b;font-size:11px;padding:2px 7px;margin-right:7px}.badge.needs_input,.badge.conditional{background:#fff1d8;color:#97630c}.badge.completed,.badge.resolved{background:#e1f4ee;color:#12725d}.badge.insufficient{background:#f9e7e7;color:#a44949}.item{border-top:1px solid #e8eef2;padding:14px 0}.item:first-child{border-top:0;padding-top:0}.item:last-child{padding-bottom:0}details{margin-top:10px}summary{cursor:pointer;color:var(--teal)}pre{font-family:inherit;white-space:pre-wrap;overflow-wrap:anywhere;font-size:12px;background:#f5f8fa;border-radius:5px;padding:12px}.source{scroll-margin-top:25px}.quote{border-left:2px solid #adc9c9;padding-left:12px;color:#465f69;font-size:12px}.empty{padding:24px 8px;text-align:center;color:#87959d}.error{color:#a23838;background:#fff0f0;border-radius:6px;padding:12px;margin-top:10px;white-space:pre-wrap;display:none}.toolbar{margin-bottom:18px;justify-content:space-between}.case-id{font-family:monospace;font-size:11px;overflow-wrap:anywhere}.footnote{font-size:11px;color:#87959d;padding:0 3px 30px}a{color:var(--teal)}.loading{color:var(--teal);font-size:12px}#loadCase{width:230px;font-size:11px}#conversation:empty{display:none}@media(max-width:850px){main{grid-template-columns:1fr;padding:0 15px;margin-top:15px}header{padding:16px 20px}header small{display:none}.intro h2{font-size:23px}.card{padding:18px}}
+  </style>
+</head>
+<body>
+<header><div><h1>律据 <small>法律证据 Agent</small></h1></div><button id="newCase">新建案件</button></header>
+<main>
+  <section>
+    <div class="intro"><h2>从案情出发，循证作答。</h2><p>拆分争议点，查阅法条；依据不足时补查，事实不明时追问。</p></div>
+    <div class="card">
+      <div class="row toolbar"><span id="status" class="badge">准备就绪</span><span id="busy" class="loading" role="status"></span></div>
+      <div id="caseInfo" class="muted"></div>
+      <div id="conversation" aria-live="polite"></div>
+      <form id="chatForm" class="compose">
+        <label for="query"><h3 id="queryLabel">描述你的案件</h3></label>
+        <textarea id="query" required maxlength="10000" placeholder="例如：公司拖欠工资，我一直没有签书面合同。这两个问题分别可以怎么处理？"></textarea>
+        <div class="row"><label class="muted">案件日期（可选） <input id="caseDate" type="date"></label><button id="send" class="primary" type="submit">分析案情</button></div>
+      </form>
+      <div id="error" class="error" role="alert"></div>
+    </div>
+    <div class="card"><h2>续办已有案件</h2><div class="row"><input id="loadCase" aria-label="案件编号" placeholder="输入案件编号"><button id="restore">加载案件</button></div><p class="muted">同一案件可补充或纠正事实。新的诉求请新建案件；刷新后会恢复上次案件。</p></div>
+    <p class="footnote">回答依据来自本地收录文本。法律版本尚未核实的资料会明确标注。证据排序权重不是胜诉概率或答案正确率。</p>
+  </section>
+  <aside>
+    <div class="card"><h2>争议点与待核实事项</h2><div id="issues"><p class="empty">提交案情后显示争议点</p></div></div>
+    <div class="card"><h2>行动记录</h2><div id="trace"><p class="empty">工具调用、补查与停止原因将在这里显示</p></div></div>
+    <div class="card"><h2>原文依据</h2><div id="sources"><p class="empty">引用可直接跳转到对应原文</p></div><button id="export" disabled>导出本案记录 JSON</button></div>
+  </aside>
+</main>
+<script>
+let current = null;
+const $ = id => document.getElementById(id);
+const relationLabels={supports:'支持',contradicts:'反驳',conditional:'条件不足',irrelevant:'不适用'};
+const gapLabels={case_fact:'案件事实',legal_evidence:'法律依据',article:'条文全文',version:'版本信息'};
+const labels = {completed:'已完成',needs_input:'待补充事实',insufficient:'部分依据不足',running:'处理中',pending:'待处理',resolved:'已有依据',conditional:'条件性结论',search_evidence:'检索与核验',read_article:'读取完整条文',ask_user:'追问事实',finish:'结束作答',reverify:'复核补充事实',stop:'达到行动预算',decision:'行动决策'};
+function el(tag, text, cls) { const node = document.createElement(tag); if(text !== undefined) node.textContent=text; if(cls) node.className=cls; return node; }
+function error(message) { $('error').textContent=message; $('error').style.display=message?'block':'none'; }
+function busy(value) { for(const id of ['send','newCase','restore']) $(id).disabled=value; $('busy').textContent=value?'正在查阅与核验，请稍候…':''; }
+async function request(path, options) { const response=await fetch(path, options); if(!response.ok) throw new Error(`请求失败 ${response.status}：${await response.text()}`); return response.json(); }
+function appendAnswer(node, text, citations=[]) { let position=0; const pattern=/\[参考资料\s*(\d+)\]/g; for(const match of text.matchAll(pattern)){node.append(document.createTextNode(text.slice(position,match.index)));const eid=citations[Number(match[1])-1];if(eid&&current.docs.some(d=>d.evidence_id===eid)){const a=el('a',match[0]);a.href=`#evidence-${eid}`;node.append(a);}else{node.append(document.createTextNode(match[0]));}position=match.index+match[0].length;}node.append(document.createTextNode(text.slice(position))); }
+function render(result) {
+  current=result; $('status').className=`badge ${result.status}`; $('status').textContent=labels[result.status]||result.status;
+  $('caseInfo').replaceChildren(); if(result.case_id){localStorage.setItem('legal-agent-case',result.case_id);$('caseInfo').append(el('p',`案件编号：${result.case_id}`,'case-id'));$('loadCase').value=result.case_id;}
+  $('conversation').replaceChildren(); const conversation=result.conversation||[{role:'assistant',content:result.answer}];
+  for(const message of conversation){const box=el('div',undefined,`message ${message.role}`);box.append(el('label',message.role==='user'?'你的陈述':'律据'));appendAnswer(box,message.content,message.citations);$('conversation').append(box);}
+  $('queryLabel').textContent=result.status==='needs_input'?'补充关键事实':'补充或纠正本案事实';$('send').textContent='继续处理';
+  if(result.case_date) $('caseDate').value=result.case_date;
+  $('issues').replaceChildren(); for(const issue of result.issues){const box=el('div',undefined,'item');const heading=el('h3');heading.append(el('span',labels[issue.status]||issue.status,`badge ${issue.status}`),document.createTextNode(issue.question));box.append(heading);if(issue.summary)box.append(el('p',issue.summary));for(const gap of issue.gaps)box.append(el('p',`${gapLabels[gap.kind]}：${gap.description}`,'muted'));$('issues').append(box);}
+  $('trace').replaceChildren(); for(const step of result.trace){const box=el('div',undefined,'item');box.append(el('strong',labels[step.action]||step.action));if(step.elapsed_ms!==undefined)box.append(el('span',` · ${step.elapsed_ms} ms`,'muted'));if(step.arguments?.reason)box.append(el('p',step.arguments.reason,'muted'));if(step.arguments){const detail=el('details');detail.append(el('summary','查看动作参数'),el('pre',JSON.stringify(step.arguments,null,2)));box.append(detail);}if(step.reason)box.append(el('p',step.reason,'muted'));$('trace').append(box);}
+  $('sources').replaceChildren();result.docs.forEach((doc,index)=>{const box=el('div',undefined,'item source');box.id=`evidence-${doc.evidence_id}`;box.append(el('h3',`[参考资料 ${index+1}] ${doc.article_label}`));const known=doc.metadata.version_status==='validity_metadata_supplied';box.append(el('p',known?'已提供部分或全部有效期元数据':'版本有效期尚未核实','muted'));for(const judgment of doc.issue_judgments||[]){box.append(el('p',`${judgment.question} · ${relationLabels[judgment.verification.relation]} · 排序权重 ${judgment.weight.toFixed(3)}`,'muted'));for(const quote of judgment.verification.quotes)box.append(el('p',quote,'quote'));}const detail=el('details');detail.append(el('summary','展开原文与来源'),el('pre',doc.text),el('pre',JSON.stringify(doc.metadata,null,2)));box.append(detail);$('sources').append(box);});
+  $('export').disabled=!result.case_id;
+}
+$('chatForm').addEventListener('submit',async event=>{event.preventDefault();const query=$('query').value.trim();if(!query)return;busy(true);error('');try{const result=await request('/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({query,case_id:current?.case_id||null,case_date:$('caseDate').value||null})});render(result);$('query').value='';}catch(err){error(err.message);}finally{busy(false);}});
+$('query').addEventListener('keydown',event=>{if((event.ctrlKey||event.metaKey)&&event.key==='Enter'&&!$('send').disabled)$('chatForm').requestSubmit();});
+$('newCase').addEventListener('click',()=>{current=null;localStorage.removeItem('legal-agent-case');$('conversation').replaceChildren();$('caseInfo').replaceChildren();$('caseDate').value='';$('query').value='';$('queryLabel').textContent='描述你的案件';$('send').textContent='分析案情';$('status').textContent='准备就绪';$('status').className='badge';for(const id of ['issues','trace','sources'])$(id).replaceChildren(el('p','提交案情后显示','empty'));$('export').disabled=true;error('');$('query').focus();});
+async function restore(id){if(!id)return;busy(true);error('');try{render(await request(`/cases/${encodeURIComponent(id)}`));}catch(err){error(err.message);}finally{busy(false);}}
+$('restore').addEventListener('click',()=>restore($('loadCase').value.trim()));
+$('export').addEventListener('click',()=>{const url=URL.createObjectURL(new Blob([JSON.stringify(current,null,2)],{type:'application/json'}));const anchor=el('a');anchor.href=url;anchor.download=`legal-case-${current.case_id}.json`;anchor.click();setTimeout(()=>URL.revokeObjectURL(url),1000);});
+restore(localStorage.getItem('legal-agent-case'));
+</script>
+</body>
+</html>

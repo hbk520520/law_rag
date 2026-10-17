@@ -1,0 +1,35 @@
+name: "legal_ensemble"
+platform: "ensemble"
+max_batch_size: 32
+input [
+  { name: "QUERY_TEXT", data_type: TYPE_STRING, dims: [ 1 ] },
+  { name: "QUERY_VECTOR", data_type: TYPE_FP32, dims: [ -1 ] }
+]
+output [
+  { name: "FINAL_TOP_TEXTS", data_type: TYPE_STRING, dims: [ -1 ] },
+  { name: "FINAL_TOP_IDS", data_type: TYPE_STRING, dims: [ -1 ] }
+]
+ensemble_scheduling {
+  step [
+    {
+      model_name: "bm25_search"
+      model_version: -1
+      input_map { key: "TEXT_IN", value: "QUERY_TEXT" }
+      output_map { key: "BM25_RANKS_OUT", value: "BM25_RANKS_OUT" }
+    },
+    {
+      model_name: "vector_search"
+      model_version: -1
+      input_map { key: "VECTOR_IN", value: "QUERY_VECTOR" }
+      output_map { key: "VECTOR_RANKS_OUT", value: "VECTOR_RANKS_OUT" }
+    },
+    {
+      model_name: "rrf_fusion"
+      model_version: -1
+      input_map { key: "BM25_RANKS_IN", value: "BM25_RANKS_OUT" }
+      input_map { key: "VECTOR_RANKS_IN", value: "VECTOR_RANKS_OUT" }
+      output_map { key: "FINAL_RESULTS", value: "FINAL_TOP_TEXTS" }
+      output_map { key: "FINAL_IDS", value: "FINAL_TOP_IDS" }
+    }
+  ]
+}
